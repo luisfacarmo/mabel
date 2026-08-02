@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mabel — Desktop v2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg:#f7f8fa;--surface:#fff;--accent:#22c3d6;--accent-hover:#1ab3c5;--accent-bg:#e8f9fb;--text:#1a1d21;--text-sec:#5f6368;--text-muted:#b0b5bd;--divider:#eef0f3;--shadow:0 1px 3px rgba(0,0,0,0.04);--radius:12px }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif; background:var(--bg); color:var(--text); display:flex; height:100vh; overflow:hidden; font-size:14px; line-height:1.5 }
+    .sidebar { width:200px; background:var(--surface); border-right:1px solid var(--divider); display:flex; flex-direction:column; padding:16px 0; flex-shrink:0 }
+    .brand { padding:0 16px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--divider); margin-bottom:8px; padding-bottom:16px }
+    .brand-icon { width:24px;height:24px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700 }
+    .brand-name { font-size:15px;font-weight:600 }
+    .nav { display:flex;flex-direction:column;gap:1px;padding:0 8px }
+    .nav a { display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--text-sec);cursor:pointer;transition:all .12s;text-decoration:none }
+    .nav a:hover { background:var(--bg);color:var(--text) }
+    .nav a.active { background:var(--accent-bg);color:var(--accent);font-weight:600 }
+    .sidebar-footer { margin-top:auto;padding:12px 16px;font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px }
+    .dot-status { width:6px;height:6px;border-radius:50%;background:#4CAF50 }
+    .main { flex:1;overflow-y:auto;display:flex;flex-direction:column }
+    .page { display:none;flex:1 }
+    .page.active { display:flex;flex-direction:column }
+    .device-area { background:var(--surface);border-bottom:1px solid var(--divider);padding:32px 40px;display:flex;align-items:center;gap:32px }
+    .device-img { width:100px;height:100px;background:linear-gradient(135deg,#e8f9fb,#d4f1f4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0 }
+    .device-info h2 { font-size:20px;font-weight:600;margin-bottom:4px }
+    .device-info .battery { display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-sec) }
+    .batt-bar { width:60px;height:4px;background:var(--divider);border-radius:2px;overflow:hidden }
+    .batt-bar .fill { height:100%;width:90%;background:var(--accent);border-radius:2px }
+    .device-info .status { margin-top:6px;font-size:12px;color:#4CAF50;display:flex;align-items:center;gap:4px }
+    .device-info .status::before { content:'';width:6px;height:6px;border-radius:50%;background:#4CAF50 }
+    .page-body { padding:24px 40px;flex:1;max-width:640px }
+    .group { margin-bottom:20px }
+    .group-label { font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;padding-left:2px }
+    .list { background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden }
+    .row { display:flex;align-items:center;justify-content:space-between;padding:13px 16px;transition:background .1s;cursor:pointer }
+    .row:hover { background:#fafbfc }
+    .row+.row { border-top:1px solid var(--divider) }
+    .row .left { display:flex;align-items:center;gap:10px }
+    .row .ico-sm { font-size:16px;width:20px;text-align:center }
+    .row .label { font-size:14px }
+    .row .sublabel { font-size:12px;color:var(--text-muted);margin-top:1px }
+    .row .right { display:flex;align-items:center;gap:8px }
+    .row .val { font-size:13px;color:var(--text-muted) }
+    .row .chev { color:var(--text-muted);font-size:14px }
+    .sw { width:40px;height:22px;border-radius:11px;background:#d4d7dc;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0 }
+    .sw.on { background:var(--accent) }
+    .sw::after { content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.12) }
+    .sw.on::after { transform:translateX(18px) }
+    .modes { display:flex;align-items:center;gap:16px;padding:4px 0 8px }
+    .mode-item { display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer }
+    .mode-circle { width:44px;height:44px;border-radius:50%;background:var(--bg);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s }
+    .mode-item.active .mode-circle { background:var(--accent);border-color:var(--accent) }
+    .mode-item .mode-label { font-size:11px;color:var(--text-sec);text-align:center }
+    .mode-item.active .mode-label { color:var(--accent);font-weight:600 }
+    .eq-container { background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px }
+    .eq-graph { position:relative;height:160px;display:flex;align-items:center;justify-content:space-around;border-bottom:1px solid var(--divider);margin-bottom:8px }
+    .eq-graph::before { content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--divider) }
+    .eq-point { width:16px;height:16px;border-radius:50%;border:2px solid var(--accent);background:#fff;cursor:grab;transition:all .12s;z-index:1 }
+    .eq-point:hover { transform:scale(1.3);background:var(--accent-bg) }
+    .eq-point.active { background:var(--accent) }
+    .eq-labels { display:flex;justify-content:space-around;font-size:10px;color:var(--text-muted) }
+    .eq-presets { display:flex;gap:6px;flex-wrap:wrap;margin-top:14px }
+    .eq-chip { padding:5px 12px;border-radius:16px;font-size:12px;font-weight:500;background:var(--bg);color:var(--text-sec);cursor:pointer;transition:all .12s;border:1px solid transparent }
+    .eq-chip:hover { border-color:var(--accent);color:var(--accent) }
+    .eq-chip.active { background:var(--accent);color:#fff;border-color:var(--accent) }
+    .level-row { display:flex;align-items:center;gap:8px;padding:12px 16px }
+    .level-pill { width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg);color:var(--text-sec);transition:all .12s }
+    .level-pill.active { background:var(--accent);color:#fff }
+    .level-label { font-size:11px;color:var(--text-muted) }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">M</div><span class="brand-name">Mabel</span></div>
+    <div class="nav">
+      <a class="active" onclick="go('home')">🎧 Home</a>
+      <a onclick="go('anc')">🔇 Noise Control</a>
+      <a onclick="go('eq')">🎵 Sound Effect</a>
+      <a onclick="go('settings')">⚙️ More Settings</a>
+    </div>
+    <div class="sidebar-footer"><div class="dot-status"></div> Connected</div>
+  </aside>
+  <div class="main">
+    <div class="page active" id="p-home">
+      <div class="device-area"><div class="device-img">🎧</div><div class="device-info"><h2>Space One Pro</h2><div class="battery"><div class="batt-bar"><div class="fill"></div></div> 90%</div><div class="status">Connected</div></div></div>
+      <div class="page-body">
+        <div class="group"><div class="group-label">Ambient Sound</div>
+          <div class="modes"><div class="mode-item active"><div class="mode-circle">🔇</div><div class="mode-label">Noise<br>Cancellation</div></div><div class="mode-item"><div class="mode-circle">🙉</div><div class="mode-label">Normal</div></div><div class="mode-item"><div class="mode-circle">🌬️</div><div class="mode-label">Transparency<br>Mode</div></div></div>
+          <div class="list"><div class="row"><div class="left"><span class="label">Mode</span></div><div class="right"><span class="val">Adaptive ANC</span><span class="chev">›</span></div></div><div class="row"><div class="left"><span class="label">Wind Noise Reduction</span></div><div class="right"><div class="sw" onclick="this.classList.toggle('on')"></div></div></div></div>
+        </div>
+        <div class="group"><div class="list"><div class="row"><div class="left"><span class="ico-sm">🎵</span><div><span class="label">Sound Effect</span><div class="sublabel">soundcore Signature</div></div></div><div class="right"><span class="chev">›</span></div></div></div></div>
+        <div class="group"><div class="list"><div class="row"><div class="left"><span class="label">Dolby Audio</span></div><div class="right"><div class="sw on" onclick="this.classList.toggle('on')"></div></div></div><div class="row"><div class="left"><span class="label">LDAC</span></div><div class="right"><div class="sw" onclick="this.classList.toggle('on')"></div></div></div></div></div>
+      </div>
+    </div>
+    <div class="page" id="p-anc">
+      <div class="device-area"><div class="device-img">🎧</div><div class="device-info"><h2>Space One Pro</h2><div class="battery"><div class="batt-bar"><div class="fill"></div></div> 90%</div><div class="status">Connected</div></div></div>
+      <div class="page-body">
+        <div class="group"><div class="group-label">Ambient Sound</div><div class="modes"><div class="mode-item active"><div class="mode-circle">🔇</div><div class="mode-label">Noise<br>Cancellation</div></div><div class="mode-item"><div class="mode-circle">🙉</div><div class="mode-label">Normal</div></div><div class="mode-item"><div class="mode-circle">🌬️</div><div class="mode-label">Transparency<br>Mode</div></div></div></div>
+        <div class="group"><div class="list"><div class="row"><div class="left"><span class="label">Mode</span></div><div class="right"><span class="val">Custom Noise Cancelling</span><span class="chev">›</span></div></div></div><div class="list" style="margin-top:8px"><div class="level-row"><span class="level-label">Min</span><div class="level-pill">1</div><div class="level-pill active">2</div><div class="level-pill">3</div><div class="level-pill">4</div><div class="level-pill">5</div><span class="level-label">Max</span></div></div></div>
+        <div class="group"><div class="list"><div class="row"><div class="left"><span class="label">Wind Noise Reduction</span></div><div class="right"><div class="sw on" onclick="this.classList.toggle('on')"></div></div></div></div></div>
+      </div>
+    </div>
+    <div class="page" id="p-eq">
+      <div class="device-area"><div class="device-img">🎧</div><div class="device-info"><h2>Space One Pro</h2><div class="battery"><div class="batt-bar"><div class="fill"></div></div> 90%</div><div class="status">Connected</div></div></div>
+      <div class="page-body">
+        <div class="group"><div class="group-label">Equalizer</div>
+          <div class="eq-container"><div class="eq-graph"><div class="eq-point"></div><div class="eq-point active" style="margin-top:-20px"></div><div class="eq-point active" style="margin-top:-40px"></div><div class="eq-point active" style="margin-top:-40px"></div><div class="eq-point active" style="margin-top:-30px"></div><div class="eq-point active" style="margin-top:-20px"></div><div class="eq-point" style="margin-top:-5px"></div><div class="eq-point" style="margin-top:15px"></div><div class="eq-point" style="margin-top:-5px"></div><div class="eq-point"></div></div><div class="eq-labels"><span>100</span><span>200</span><span>400</span><span>800</span><span>1.6k</span><span>3.2k</span><span>6.4k</span><span>12.8k</span><span>16k</span><span>20k</span></div></div>
+          <div class="eq-presets"><div class="eq-chip">Signature</div><div class="eq-chip">Bass Boost</div><div class="eq-chip active">Podcast</div><div class="eq-chip">Classical</div><div class="eq-chip">Treble Boost</div><div class="eq-chip">Custom</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="p-settings">
+      <div class="device-area"><div class="device-img">🎧</div><div class="device-info"><h2>Space One Pro</h2><div class="battery"><div class="batt-bar"><div class="fill"></div></div> 90%</div><div class="status">Connected</div></div></div>
+      <div class="page-body">
+        <div class="group"><div class="group-label">Audio</div><div class="list"><div class="row"><div class="left"><span class="label">Side Tone</span></div><div class="right"><div class="sw" onclick="this.classList.toggle('on')"></div></div></div><div class="row"><div class="left"><span class="label">Low Battery Prompt</span></div><div class="right"><div class="sw on" onclick="this.classList.toggle('on')"></div></div></div><div class="row"><div class="left"><span class="label">Voice Prompt</span></div><div class="right"><div class="sw on" onclick="this.classList.toggle('on')"></div></div></div></div></div>
+        <div class="group"><div class="group-label">Connections</div><div class="list"><div class="row"><div class="left"><span class="label">Dual Connections</span></div><div class="right"><div class="sw on" onclick="this.classList.toggle('on')"></div></div></div><div class="row"><div class="left"><div><span class="label">Sound Mode</span><div class="sublabel">Preferred audio quality</div></div></div><div class="right"><span class="chev">›</span></div></div></div></div>
+        <div class="group"><div class="group-label">Power</div><div class="list"><div class="row"><div class="left"><span class="label">Auto Power Off</span></div><div class="right"><span class="val">60 Minutes</span><span class="chev">›</span></div></div><div class="row"><div class="left"><span class="label">Limit High Volume</span></div><div class="right"><div class="sw" onclick="this.classList.toggle('on')"></div></div></div></div></div>
+        <div class="group"><div class="group-label">Device</div><div class="list"><div class="row"><div class="left"><span class="label">Device Name</span></div><div class="right"><span class="val">Space One Pro</span></div></div><div class="row"><div class="left"><span class="label">Firmware</span></div><div class="right"><span class="val">03.37</span></div></div><div class="row"><div class="left"><span class="label">Serial Number</span></div><div class="right"><span class="val">3062DB212C13E97C</span></div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <script>function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav a').forEach(e=>e.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');event.currentTarget.classList.add('active')}</script>
+</body>
+</html>

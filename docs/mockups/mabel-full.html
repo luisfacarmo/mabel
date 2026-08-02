@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mabel — Full Mockup (Soundcore Style)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --accent: #00BCD4;
+      --accent-light: #E0F7FA;
+      --accent-dark: #00838F;
+      --green: #4CAF50;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --border: #e8e8ed;
+      --shadow: 0 1px 8px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+      --radius: 14px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; height: 100vh; overflow: hidden;
+    }
+    .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; gap: 2px; }
+    .sidebar-brand { padding: 0 20px 20px; display: flex; align-items: center; gap: 10px; }
+    .sidebar-brand .dot { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; }
+    .sidebar-brand span { font-size: 16px; font-weight: 600; }
+    .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all 0.12s; }
+    .nav-link:hover { background: #f3f3f5; color: var(--text); }
+    .nav-link.active { background: var(--accent-light); color: var(--accent-dark); font-weight: 600; border-right: 3px solid var(--accent); }
+    .nav-link .emoji { width: 20px; text-align: center; font-size: 15px; }
+    .sidebar-spacer { flex: 1; }
+    .sidebar-status { padding: 12px 20px; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .sidebar-status .dot-green { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 4px var(--green); }
+    .content { flex: 1; overflow-y: auto; padding: 28px 40px; display: none; }
+    .content.active { display: block; }
+    .device-hero { display: flex; flex-direction: column; align-items: center; padding: 24px 0 32px; }
+    .device-img-wrap { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #e0f7fa, #b2ebf2); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 56px; }
+    .device-hero h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .battery-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .battery-pill { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+    .battery-pill .bar { width: 40px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .battery-pill .bar .fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dark)); }
+    .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px 0; margin-bottom: 16px; }
+    .card-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; transition: background 0.1s; }
+    .card-row:hover { background: #fafafa; }
+    .card-row + .card-row { border-top: 1px solid var(--border); }
+    .card-row .left { display: flex; align-items: center; gap: 12px; }
+    .card-row .left .emoji { font-size: 18px; width: 24px; text-align: center; }
+    .card-row .label { font-size: 14px; font-weight: 500; }
+    .card-row .sublabel { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .card-row .right { display: flex; align-items: center; gap: 8px; }
+    .card-row .value { font-size: 13px; color: var(--text-muted); }
+    .card-row .chevron { color: var(--text-muted); font-size: 16px; }
+    .toggle { width: 42px; height: 24px; border-radius: 12px; background: #d1d5db; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+    .toggle.on { background: var(--accent); }
+    .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle.on::after { transform: translateX(18px); }
+    .mode-segment { display: flex; gap: 0; background: var(--border); border-radius: 10px; padding: 3px; margin: 12px 0 14px; }
+    .mode-btn { flex: 1; padding: 8px 12px; text-align: center; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+    .mode-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .eq-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .eq-header h3 { font-size: 18px; font-weight: 600; }
+    .eq-grid { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; }
+    .eq-canvas { width: 100%; height: 200px; position: relative; border-bottom: 1px solid var(--border); }
+    .eq-line { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
+    .eq-dots { display: flex; justify-content: space-between; position: absolute; bottom: 0; left: 0; right: 0; top: 0; align-items: center; padding: 0 8px; }
+    .eq-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); background: white; cursor: grab; transition: all 0.15s; }
+    .eq-dot:hover { background: var(--accent-light); transform: scale(1.2); }
+    .eq-dot.filled { background: var(--accent); }
+    .eq-freqs { display: flex; justify-content: space-between; padding: 8px 8px 0; font-size: 10px; color: var(--text-muted); }
+    .eq-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .eq-preset { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #f3f4f6; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+    .eq-preset:hover { background: var(--accent-light); color: var(--accent-dark); }
+    .eq-preset.active { background: var(--accent); color: white; }
+    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 20px 0 8px; padding-left: 4px; }
+    .section-title:first-child { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="dot">M</div><span>Mabel</span></div>
+    <div class="nav-link active" onclick="showPage('home')"><span class="emoji">🏠</span> Home</div>
+    <div class="nav-link" onclick="showPage('anc')"><span class="emoji">🎧</span> Noise Control</div>
+    <div class="nav-link" onclick="showPage('eq')"><span class="emoji">🎵</span> Sound Effect</div>
+    <div class="nav-link" onclick="showPage('controls')"><span class="emoji">👆</span> Controls</div>
+    <div class="nav-link" onclick="showPage('settings')"><span class="emoji">⚙️</span> More Settings</div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-status"><div class="dot-green"></div> Connected</div>
+  </aside>
+
+  <div class="content active" id="page-home">
+    <div class="device-hero">
+      <div class="device-img-wrap">🎧</div>
+      <h2>Space One Pro</h2>
+      <div class="battery-row"><div class="battery-pill"><div class="bar"><div class="fill" style="width:90%"></div></div> 90%</div></div>
+    </div>
+    <div class="mode-segment">
+      <div class="mode-btn active">Noise Cancellation</div>
+      <div class="mode-btn">Normal</div>
+      <div class="mode-btn">Transparency</div>
+    </div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Wind Noise Reduction</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-row"><div class="left"><span class="emoji">🎵</span><div><div class="label">Sound Effects</div><div class="sublabel">soundcore Signature</div></div></div><div class="right"><span class="chevron">›</span></div></div>
+    </div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Dolby Audio</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div>
+      <div class="card-row"><div class="left"><div class="label">LDAC</div></div><div class="right"><div class="toggle" onclick="this.classList.toggle('on')"></div></div></div>
+    </div>
+  </div>
+
+  <div class="content" id="page-anc">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:20px">Noise Control</h3>
+    <div class="mode-segment">
+      <div class="mode-btn active">Noise Cancellation</div>
+      <div class="mode-btn">Normal</div>
+      <div class="mode-btn">Transparency</div>
+    </div>
+    <div class="card"><div class="card-row"><div class="left"><div class="label">Mode</div></div><div class="right"><span class="value">Custom Noise Cancelling</span><span class="chevron">›</span></div></div></div>
+    <div class="card" style="padding:16px 18px">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Level</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;color:var(--text-muted)">Min</span>
+        <div style="display:flex;gap:6px;flex:1;justify-content:center">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">1</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer">2</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">3</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">4</div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;cursor:pointer">5</div>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)">Max</span>
+      </div>
+    </div>
+    <div class="card"><div class="card-row"><div class="left"><div class="label">Wind Noise Reduction</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div></div>
+  </div>
+
+  <div class="content" id="page-eq">
+    <div class="eq-header"><h3>Sound Effects</h3></div>
+    <div class="eq-grid">
+      <div class="eq-canvas">
+        <div class="eq-line"></div>
+        <div class="eq-dots">
+          <div class="eq-dot"></div>
+          <div class="eq-dot filled" style="margin-top:-20px"></div>
+          <div class="eq-dot filled" style="margin-top:-40px"></div>
+          <div class="eq-dot filled" style="margin-top:-40px"></div>
+          <div class="eq-dot filled" style="margin-top:-30px"></div>
+          <div class="eq-dot filled" style="margin-top:-20px"></div>
+          <div class="eq-dot" style="margin-top:-10px"></div>
+          <div class="eq-dot" style="margin-top:10px"></div>
+          <div class="eq-dot" style="margin-top:-10px"></div>
+          <div class="eq-dot"></div>
+        </div>
+      </div>
+      <div class="eq-freqs"><span>100</span><span>200</span><span>400</span><span>800</span><span>1.6k</span><span>3.2k</span><span>6.4k</span><span>12.8k</span><span>16k</span><span>20k</span></div>
+    </div>
+    <div class="eq-presets">
+      <div class="eq-preset">Signature</div>
+      <div class="eq-preset">Bass Boost</div>
+      <div class="eq-preset active">Podcast</div>
+      <div class="eq-preset">Classical</div>
+      <div class="eq-preset">Treble Boost</div>
+      <div class="eq-preset">Custom</div>
+    </div>
+  </div>
+
+  <div class="content" id="page-controls">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:20px">Controls</h3>
+    <div class="section-title">Audio</div>
+    <div class="card"><div class="card-row"><div class="left"><span class="emoji">👆</span><div><div class="label">Double Press</div><div class="sublabel">Bass Up</div></div></div><div class="right"><span class="chevron">›</span></div></div></div>
+    <div class="section-title">Call (Not Adjustable)</div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div><div class="label">Double Press</div><div class="sublabel">Answer / End</div></div></div></div>
+      <div class="card-row"><div class="left"><div><div class="label">Long Press (2s)</div><div class="sublabel">Reject</div></div></div></div>
+    </div>
+  </div>
+
+  <div class="content" id="page-settings">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:20px">More Settings</h3>
+    <div class="section-title">Audio</div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Side Tone</div></div><div class="right"><div class="toggle" onclick="this.classList.toggle('on')"></div></div></div>
+      <div class="card-row"><div class="left"><div class="label">Low Battery Prompt</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div>
+      <div class="card-row"><div class="left"><div class="label">Voice Prompt</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div>
+    </div>
+    <div class="section-title">Connections</div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Dual Connections</div></div><div class="right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div>
+      <div class="card-row"><div class="left"><div><div class="label">Sound Mode</div><div class="sublabel">Preferred audio quality</div></div></div><div class="right"><span class="chevron">›</span></div></div>
+    </div>
+    <div class="section-title">Power</div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Auto Power Off</div></div><div class="right"><span class="value">60 Minutes</span><span class="chevron">›</span></div></div>
+      <div class="card-row"><div class="left"><div class="label">Limit High Volume</div></div><div class="right"><div class="toggle" onclick="this.classList.toggle('on')"></div></div></div>
+    </div>
+    <div class="section-title">Device</div>
+    <div class="card">
+      <div class="card-row"><div class="left"><div class="label">Device Name</div></div><div class="right"><span class="value">Space One Pro</span></div></div>
+      <div class="card-row"><div class="left"><div class="label">Firmware</div></div><div class="right"><span class="value">03.37</span></div></div>
+      <div class="card-row"><div class="left"><div class="label">Serial Number</div></div><div class="right"><span class="value" style="font-size:11px">3062DB212C13E97C</span></div></div>
+    </div>
+  </div>
+
+  <script>
+    function showPage(page) {
+      document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>
