@@ -1,55 +1,52 @@
 import { NavLink } from "react-router-dom";
-import { Home, Headphones, AudioLines, Sliders, Settings } from "lucide-react";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import { Home, Headphones, AudioLines, Settings } from "lucide-react";
 
 const NAV_ITEMS = [
   { to: "/", icon: Home, label: "Home" },
-  { to: "/anc", icon: Headphones, label: "ANC" },
-  { to: "/sound", icon: AudioLines, label: "Sound" },
-  { to: "/controls", icon: Sliders, label: "Controls" },
+  { to: "/anc", icon: Headphones, label: "Noise Control" },
+  { to: "/sound", icon: AudioLines, label: "Sound Effect" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
 export default function Sidebar() {
   return (
-    <Tooltip.Provider delayDuration={300}>
-      <nav className="flex flex-col items-center w-16 shrink-0 border-r border-border bg-[#0a0a0c] py-4 gap-1">
-        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
-          <Tooltip.Root key={to}>
-            <Tooltip.Trigger asChild>
-              <NavLink
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-accent/15 text-accent"
-                      : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"
-                  }`
-                }
-              >
-                <Icon size={20} />
-              </NavLink>
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content
-                side="right"
-                sideOffset={8}
-                className="bg-surface border border-border rounded-md px-2.5 py-1.5 text-xs text-text-primary shadow-lg"
-              >
-                {label}
-                <Tooltip.Arrow className="fill-surface" />
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
-        ))}
-
-        <div className="flex-1" />
-
-        {/* Connection indicator */}
-        <div className="flex items-center justify-center w-10 h-10">
-          <div className="w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_6px_var(--color-success)]" />
+    <aside className="w-[220px] shrink-0 bg-surface border-r border-border flex flex-col py-5">
+      {/* Brand */}
+      <div className="flex items-center gap-3 px-5 pb-5 border-b border-border mb-2">
+        <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold">
+          M
         </div>
+        <span className="text-[16px] font-semibold text-text">Mabel</span>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex flex-col gap-0.5 px-2">
+        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-[10px] rounded-lg text-[13px] font-medium transition-colors ${
+                isActive
+                  ? "bg-accent-bg text-accent-dark font-semibold border-r-[3px] border-accent"
+                  : "text-text-secondary hover:bg-bg hover:text-text"
+              }`
+            }
+          >
+            <Icon size={18} />
+            {label}
+          </NavLink>
+        ))}
       </nav>
-    </Tooltip.Provider>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Status */}
+      <div className="flex items-center gap-2 px-5 text-[11px] text-text-muted">
+        <div className="w-[7px] h-[7px] rounded-full bg-success shadow-[0_0_4px_var(--color-success)]" />
+        Connected
+      </div>
+    </aside>
   );
 }

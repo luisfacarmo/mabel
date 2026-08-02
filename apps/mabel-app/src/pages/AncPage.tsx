@@ -1,8 +1,77 @@
+import { useState } from "react";
+import { useDeviceData } from "../providers/DeviceProvider";
+import { SectionLabel, ListCard, ToggleRow, LinkRow, ModeCard } from "../components/ui";
+import type { AmbientSoundMode } from "../lib/types";
+
+const MODES: Array<{ key: AmbientSoundMode; icon: string; label: string }> = [
+  { key: "noiseCanceling", icon: "🔇", label: "Noise<br>Cancellation" },
+  { key: "normal", icon: "🙉", label: "Normal" },
+  { key: "transparency", icon: "🌬️", label: "Transparency<br>Mode" },
+];
+
 export default function AncPage() {
+  const state = useDeviceData();
+  const [activeMode, setActiveMode] = useState<AmbientSoundMode>(
+    state?.soundModes.ambientSoundMode ?? "noiseCanceling"
+  );
+  const [ncLevel, setNcLevel] = useState(state?.soundModes.customNcLevel ?? 3);
+  const [windNoise, setWindNoise] = useState(state?.soundModes.windNoiseReduction ?? false);
+
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4">
-      <h2 className="text-2xl font-semibold text-text-primary">Noise Control</h2>
-      <p className="text-text-secondary text-sm">ANC modes, transparency, wind noise</p>
+    <div>
+      <h2 className="text-[18px] font-semibold mb-5">Noise Control</h2>
+
+      {/* Mode selector */}
+      <div className="mb-6">
+        <SectionLabel>Ambient Sound</SectionLabel>
+        <div className="flex gap-3 mb-4">
+          {MODES.map(({ key, icon, label }) => (
+            <ModeCard
+              key={key}
+              icon={icon}
+              label={label}
+              active={activeMode === key}
+              onClick={() => setActiveMode(key)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Mode + Level */}
+      <div className="mb-6">
+        <ListCard>
+          <LinkRow label="Mode" value="Custom Noise Cancelling" />
+        </ListCard>
+        <ListCard>
+          <div className="px-[18px] py-[14px]">
+            <div className="text-[13px] text-text-secondary mb-3">Level</div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="text-[11px] text-text-muted">Min</span>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setNcLevel(n)}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all ${
+                    ncLevel === n
+                      ? "bg-accent text-white shadow-[0_2px_8px_rgba(77,208,225,0.3)]"
+                      : "bg-border text-text-secondary hover:bg-accent-bg"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <span className="text-[11px] text-text-muted">Max</span>
+            </div>
+          </div>
+        </ListCard>
+      </div>
+
+      {/* Wind noise */}
+      <div className="mb-6">
+        <ListCard>
+          <ToggleRow label="Wind Noise Reduction" checked={windNoise} onChange={setWindNoise} />
+        </ListCard>
+      </div>
     </div>
   );
 }
