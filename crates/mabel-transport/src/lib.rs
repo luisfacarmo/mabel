@@ -1,22 +1,18 @@
-//! Bluetooth transport abstraction.
+//! Bluetooth transport abstraction for Mabel.
 //!
-//! Provides a trait-based interface for connecting to Soundcore devices
-//! via RFCOMM (Windows) with future support for other platforms.
+//! Provides trait-based RFCOMM connectivity. Platform-specific implementations
+//! live in submodules. `MockTransport` is always available for testing.
 
-pub mod error {
-    use thiserror::Error;
+pub mod error;
+pub mod mock;
+pub mod traits;
 
-    #[derive(Debug, Error)]
-    pub enum TransportError {
-        #[error("device not found: {0}")]
-        DeviceNotFound(String),
-        #[error("connection failed: {0}")]
-        ConnectionFailed(String),
-        #[error("disconnected")]
-        Disconnected,
-        #[error("I/O error: {0}")]
-        Io(String),
-    }
-}
+#[cfg(windows)]
+pub mod windows;
 
 pub use error::TransportError;
+pub use mock::MockTransport;
+pub use traits::{ConnectionDescriptor, ConnectionStatus, RfcommConnection, RfcommTransport};
+
+#[cfg(windows)]
+pub use windows::WindowsRfcommTransport;
