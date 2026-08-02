@@ -1,0 +1,12 @@
+[package]
+name = "mabel-transport"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Bluetooth transport layer: RFCOMM connection for Windows (and future platforms)"
+
+[dependencies]
+tokio.workspace = true
+thiserror.workspace = true
+tracing.workspace = true

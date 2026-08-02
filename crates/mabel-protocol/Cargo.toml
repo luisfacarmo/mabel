@@ -1,0 +1,11 @@
+[package]
+name = "mabel-protocol"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Soundcore device protocol: packet framing, parsing, and per-model decoders"
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true
