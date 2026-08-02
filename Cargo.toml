@@ -4,6 +4,7 @@ members = [
     "crates/mabel-protocol",
     "crates/mabel-transport",
     "crates/mabel-core",
+    "apps/mabel-app/src-tauri",
 ]
 
 [workspace.package]
