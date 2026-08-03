@@ -14,6 +14,10 @@ dist/
 # IDE
 .vscode/
 .idea/
+.kiro/
+.claude/
+.cursor/
+.windsurf/
 
 # OS
 .DS_Store
