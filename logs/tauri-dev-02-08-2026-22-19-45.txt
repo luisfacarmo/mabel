@@ -1,0 +1,142 @@
+
+> mabel-app@0.1.0 tauri
+> tauri dev
+
+     Running BeforeDevCommand (`npm run dev`)
+
+> mabel-app@0.1.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m667[22m[2m[0m ms[22m
+
+  [32mÔ×£[39m  [1mLocal[22m:   [36mhttp://localhost:[1m1420[22m/[39m
+     Running DevCommand (`cargo  run --no-default-features --color always --`)
+        Info Watching C:\Users\LuisCarmo\Documents\Kiro\Projetos Pessoais\mabel\apps\mabel-app\src-tauri for changes...
+        Info Watching C:\Users\LuisCarmo\Documents\Kiro\Projetos Pessoais\mabel\crates\mabel-protocol for changes...
+        Info Watching C:\Users\LuisCarmo\Documents\Kiro\Projetos Pessoais\mabel\crates\mabel-transport for changes...
+warning: variant `SetButtonConfig` is never constructed
+  --> apps\mabel-app\src-tauri\src\device.rs:26:5
+   |
+22 | pub enum DeviceCommand {
+   |          ------------- variant in this enum
+...
+26 |     SetButtonConfig(a3062::ButtonConfig),
+   |     ^^^^^^^^^^^^^^^
+   |
+   = note: `DeviceCommand` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mabel-app` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.69s
+     Running `C:\Users\LuisCarmo\Documents\Kiro\Projetos Pessoais\mabel\target\debug\mabel-app.exe`
+[2m2026-08-03T01:19:52.478856Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:19:52.534904Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:19:52.596856Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:19:52.597227Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:19:52.597326Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:19:52.597387Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:19:52.700506Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:19:52.700571Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:19:52.700606Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:19:54.065398Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:19:59.068592Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:19:59.078076Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:19:59.131358Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:19:59.131724Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:19:59.131798Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:19:59.131887Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:19:59.212067Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:19:59.212115Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:19:59.212122Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:19:59.618081Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:04.626440Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:04.635804Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:04.790353Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:04.790548Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:04.790650Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:04.790706Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:04.892802Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:04.892844Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:04.892852Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:05.336197Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:10.348440Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:10.359129Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:10.417341Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:10.417533Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:10.417589Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:10.417705Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:10.514830Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:10.514877Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:10.514886Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:10.965124Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:15.981580Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:15.991092Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:16.045117Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:16.045393Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:16.045469Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:16.045551Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:16.253855Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:16.253907Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:16.253915Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:16.717047Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:21.730365Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:21.739305Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:21.796538Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:21.796838Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:21.796956Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:21.797062Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:21.901343Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:21.901384Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:21.901392Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:22.330009Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:27.332967Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:27.343866Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:27.399208Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:27.399431Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:27.399526Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:27.399586Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:27.583788Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:27.583827Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:27.583835Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:27.962194Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:32.966387Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:32.975792Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:33.040306Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:33.040508Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:33.040583Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:33.040642Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:33.138318Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:33.138363Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:33.138371Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:33.504709Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:38.507049Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:38.518302Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:38.574458Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:38.574698Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:38.574800Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:38.574867Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:38.673744Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:38.673783Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:38.673792Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:39.077258Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:44.082961Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:44.094654Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:44.152333Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:44.152564Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:44.152734Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:44.152805Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:44.249606Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:44.249658Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:44.249666Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:44.629789Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)
+[2m2026-08-03T01:20:49.635990Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m querying devices with filter
+[2m2026-08-03T01:20:49.644767Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 1 connected Bluetooth devices
+[2m2026-08-03T01:20:49.801566Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   device: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:49.801771Z[0m [32m INFO[0m [2mmabel_app_lib::device[0m[2m:[0m found: soundcore Space One Pro (7C:E9:13:9A:D6:48)
+[2m2026-08-03T01:20:49.801867Z[0m [32m INFO[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m connecting to 7C:E9:13:9A:D6:48
+[2m2026-08-03T01:20:49.801927Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m finding device with MAC filter
+[2m2026-08-03T01:20:49.902111Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m found 6 RFCOMM services
+[2m2026-08-03T01:20:49.902153Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   service [0]: 0000111E-0000-1000-8000-00805F9B34FB
+[2m2026-08-03T01:20:49.902165Z[0m [34mDEBUG[0m [2mmabel_transport::windows::rfcomm[0m[2m:[0m   -> selected non-SPP service at index 0
+[2m2026-08-03T01:20:50.349088Z[0m [34mDEBUG[0m [2mmabel_app_lib::device[0m[2m:[0m connect failed: connection failed: ConnectAsync get: Normalmente ├® permitida apenas uma utiliza├º├úo de cada endere├ºo de soquete (protocolo/endere├ºo de rede/porta). (0x80072740)

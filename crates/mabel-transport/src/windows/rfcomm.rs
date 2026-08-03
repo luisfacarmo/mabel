@@ -15,8 +15,7 @@ use tracing::{debug, info, instrument, warn};
 use windows::{
     Devices::{
         Bluetooth::{
-            BluetoothCacheMode, BluetoothConnectionStatus, BluetoothDevice,
-            Rfcomm::RfcommDeviceService,
+            BluetoothConnectionStatus, BluetoothDevice,
         },
         Enumeration::DeviceInformation,
     },
@@ -116,62 +115,125 @@ fn connect_blocking(mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
     info!("connecting to {}", mac_address);
 
     let device = find_device_by_mac(mac_address)?;
-    let service = select_rfcomm_service(&device)?;
 
-    let socket = StreamSocket::new()
-        .map_err(|e| TransportError::ConnectionFailed(format!("StreamSocket::new: {e}")))?;
-
-    let host_name = service
-        .ConnectionHostName()
-        .map_err(|e| TransportError::ConnectionFailed(format!("ConnectionHostName: {e}")))?;
-    let service_name = service
-        .ConnectionServiceName()
-        .map_err(|e| TransportError::ConnectionFailed(format!("ConnectionServiceName: {e}")))?;
-
-    socket
-        .ConnectWithProtectionLevelAsync(
-            &host_name,
-            &service_name,
-            SocketProtectionLevel::BluetoothEncryptionAllowNullAuthentication,
-        )
-        .map_err(|e| TransportError::ConnectionFailed(format!("ConnectAsync: {e}")))?
+    // Get all RFCOMM services
+    let services_result = device
+        .GetRfcommServicesAsync()
+        .map_err(|e| TransportError::Platform(format!("GetRfcommServicesAsync: {e}")))?
         .get()
-        .map_err(|e| TransportError::ConnectionFailed(format!("ConnectAsync get: {e}")))?;
+        .map_err(|e| TransportError::Platform(format!("GetRfcommServicesAsync get: {e}")))?;
 
-    info!("RFCOMM socket connected to {}", mac_address);
+    let services = services_result
+        .Services()
+        .map_err(|e| TransportError::Platform(format!("Services: {e}")))?;
 
-    let socket_ref = AgileReference::new(&socket)
-        .map_err(|e| TransportError::Platform(format!("AgileReference socket: {e}")))?;
-    let device_ref = AgileReference::new(&device)
-        .map_err(|e| TransportError::Platform(format!("AgileReference device: {e}")))?;
+    let count = services.Size().unwrap_or(0);
+    debug!("found {} RFCOMM services, trying each...", count);
 
-    let read_rx = spawn_read_channel(&socket)?;
+    if count == 0 {
+        return Err(TransportError::ConnectionFailed(
+            "no RFCOMM services found on device".into(),
+        ));
+    }
 
-    let (status_tx, status_rx) = watch::channel(ConnectionStatus::Connected);
-    let status_token = device
-        .ConnectionStatusChanged(&TypedEventHandler::new(
-            move |device: windows::core::Ref<'_, BluetoothDevice>, _| {
-                if let Some(device) = device.as_ref() {
-                    let new_status =
-                        if device.ConnectionStatus()? == BluetoothConnectionStatus::Connected {
-                            ConnectionStatus::Connected
-                        } else {
-                            ConnectionStatus::Disconnected
-                        };
-                    status_tx.send_replace(new_status);
-                }
-                Ok(())
-            },
-        ))
-        .map_err(|e| TransportError::Platform(format!("ConnectionStatusChanged: {e}")))?;
+    // Try each service until one connects successfully
+    let mut last_error = String::new();
 
-    Ok(Box::new(WindowsRfcommConnection {
-        device: device_ref,
-        socket: socket_ref,
-        read_channel: Mutex::new(Some(read_rx)),
-        status_rx,
-        _status_token: status_token,
-    }))
+    for i in 0..count {
+        let service = match services.GetAt(i) {
+            Ok(s) => s,
+            Err(_) => continue,
+        };
+
+        let uuid_str = service
+            .ServiceId()
+            .and_then(|id| id.Uuid())
+            .map(|u| format!("{:?}", u))
+            .unwrap_or_else(|_| "unknown".into());
+
+        debug!("  trying service [{}]: {}", i, uuid_str);
+
+        let socket = match StreamSocket::new() {
+            Ok(s) => s,
+            Err(e) => {
+                debug!("    StreamSocket::new failed: {e}");
+                continue;
+            }
+        };
+
+        let host_name = match service.ConnectionHostName() {
+            Ok(h) => h,
+            Err(e) => {
+                debug!("    ConnectionHostName failed: {e}");
+                continue;
+            }
+        };
+
+        let service_name = match service.ConnectionServiceName() {
+            Ok(s) => s,
+            Err(e) => {
+                debug!("    ConnectionServiceName failed: {e}");
+                continue;
+            }
+        };
+
+        match socket
+            .ConnectWithProtectionLevelAsync(
+                &host_name,
+                &service_name,
+                SocketProtectionLevel::BluetoothEncryptionAllowNullAuthentication,
+            )
+            .and_then(|op| op.get())
+        {
+            Ok(()) => {
+                info!("  -> connected via service [{}]: {}", i, uuid_str);
+
+                let socket_ref = AgileReference::new(&socket)
+                    .map_err(|e| TransportError::Platform(format!("AgileRef socket: {e}")))?;
+                let device_ref = AgileReference::new(&device)
+                    .map_err(|e| TransportError::Platform(format!("AgileRef device: {e}")))?;
+
+                let read_rx = spawn_read_channel(&socket)?;
+
+                let (status_tx, status_rx) = watch::channel(ConnectionStatus::Connected);
+                let status_token = device
+                    .ConnectionStatusChanged(&TypedEventHandler::new(
+                        move |dev: windows::core::Ref<'_, BluetoothDevice>, _| {
+                            if let Some(dev) = dev.as_ref() {
+                                let s = if dev.ConnectionStatus()?
+                                    == BluetoothConnectionStatus::Connected
+                                {
+                                    ConnectionStatus::Connected
+                                } else {
+                                    ConnectionStatus::Disconnected
+                                };
+                                status_tx.send_replace(s);
+                            }
+                            Ok(())
+                        },
+                    ))
+                    .map_err(|e| TransportError::Platform(format!("StatusChanged: {e}")))?;
+
+                return Ok(Box::new(WindowsRfcommConnection {
+                    device: device_ref,
+                    socket: socket_ref,
+                    read_channel: Mutex::new(Some(read_rx)),
+                    status_rx,
+                    _status_token: status_token,
+                }));
+            }
+            Err(e) => {
+                debug!("    connect failed: {e}");
+                last_error = e.to_string();
+                continue;
+            }
+        }
+    }
+
+    Err(TransportError::ConnectionFailed(format!(
+        "all {} services failed, last error: {}",
+        count, last_error
+    )))
 }
 
 fn find_device_by_mac(mac_address: &str) -> Result<BluetoothDevice> {
@@ -210,49 +272,6 @@ fn find_device_by_mac(mac_address: &str) -> Result<BluetoothDevice> {
         .map_err(|e| TransportError::Platform(format!("FromIdAsync: {e}")))?
         .get()
         .map_err(|e| TransportError::Platform(format!("FromIdAsync get: {e}")))
-}
-
-fn select_rfcomm_service(device: &BluetoothDevice) -> Result<RfcommDeviceService> {
-    let services_result = device
-        .GetRfcommServicesAsync()
-        .map_err(|e| TransportError::Platform(format!("GetRfcommServicesAsync: {e}")))?
-        .get()
-        .map_err(|e| TransportError::Platform(format!("GetRfcommServicesAsync get: {e}")))?;
-
-    let services = services_result
-        .Services()
-        .map_err(|e| TransportError::Platform(format!("Services: {e}")))?;
-
-    let count = services.Size().unwrap_or(0);
-    debug!("found {} RFCOMM services", count);
-
-    if count == 0 {
-        let services_result = device
-            .GetRfcommServicesWithCacheModeAsync(BluetoothCacheMode::Uncached)
-            .map_err(|e| TransportError::Platform(format!("GetRfcommServices uncached: {e}")))?
-            .get()
-            .map_err(|e| {
-                TransportError::Platform(format!("GetRfcommServices uncached get: {e}"))
-            })?;
-
-        let services = services_result
-            .Services()
-            .map_err(|e| TransportError::Platform(format!("Services uncached: {e}")))?;
-
-        if services.Size().unwrap_or(0) == 0 {
-            return Err(TransportError::ConnectionFailed(
-                "no RFCOMM services found on device".into(),
-            ));
-        }
-
-        return services
-            .GetAt(0)
-            .map_err(|e| TransportError::ConnectionFailed(format!("GetAt service: {e}")));
-    }
-
-    services
-        .GetAt(0)
-        .map_err(|e| TransportError::ConnectionFailed(format!("GetAt service: {e}")))
 }
 
 fn spawn_read_channel(socket: &StreamSocket) -> Result<mpsc::Receiver<Vec<u8>>> {
