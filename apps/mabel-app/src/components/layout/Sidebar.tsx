@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { Home, Headphones, AudioLines, Settings } from "lucide-react";
+import { Home, Headphones, AudioLines, SlidersHorizontal, Settings } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDeviceConnection } from "../../providers/DeviceProvider";
 
 const NAV_ITEMS = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/anc", icon: Headphones, label: "Noise Control" },
   { to: "/sound", icon: AudioLines, label: "Sound Effect" },
+  { to: "/controls", icon: SlidersHorizontal, label: "Controls" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -42,8 +44,16 @@ export default function Sidebar() {
               }`
             }
           >
-            <Icon size={18} />
-            {label}
+            {({ isActive }) => (
+              <motion.div
+                className="flex items-center gap-3 w-full"
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
+                <Icon size={18} className={isActive ? "text-accent" : ""} />
+                {label}
+              </motion.div>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -51,7 +61,11 @@ export default function Sidebar() {
       <div className="flex-1" />
 
       <div className="flex items-center gap-2 px-5 text-[11px] text-text-muted">
-        <div className={`w-[7px] h-[7px] rounded-full ${dotColor}`} />
+        <motion.div
+          className={`w-[7px] h-[7px] rounded-full ${dotColor}`}
+          animate={status === "connected" ? { scale: [1, 1.2, 1] } : {}}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        />
         {statusLabel}
       </div>
     </aside>

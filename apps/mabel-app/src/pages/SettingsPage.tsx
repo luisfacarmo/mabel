@@ -1,14 +1,15 @@
-import { useState } from "react";
-import { useDeviceData } from "../providers/DeviceProvider";
+import { useDeviceData, useDeviceCommands } from "../providers/DeviceProvider";
 import { SectionLabel, ListCard, ToggleRow, LinkRow } from "../components/ui";
 
 export default function SettingsPage() {
   const state = useDeviceData();
-  const [sideTone, setSideTone] = useState(state?.toggles.sideTone ?? false);
-  const [lowBattery, setLowBattery] = useState(state?.toggles.lowBatteryPrompt ?? true);
-  const [voicePrompt, setVoicePrompt] = useState(state?.toggles.voicePrompt ?? true);
-  const [dualConn, setDualConn] = useState(state?.dualConnections.enabled ?? true);
-  const [limitVol, setLimitVol] = useState(state?.limitHighVolume.enabled ?? false);
+  const { setSidetone, setLdac, setDolby } = useDeviceCommands();
+
+  const sideTone = state?.toggles.sideTone ?? false;
+  const ldac = state?.toggles.ldac ?? false;
+  const dolby = state?.toggles.dolbyAudio ?? true;
+  const lowBattery = state?.toggles.lowBatteryPrompt ?? true;
+  const voicePrompt = state?.toggles.voicePrompt ?? true;
 
   return (
     <div>
@@ -18,18 +19,19 @@ export default function SettingsPage() {
       <div className="mb-6">
         <SectionLabel>Audio</SectionLabel>
         <ListCard>
-          <ToggleRow label="Side Tone" checked={sideTone} onChange={setSideTone} />
-          <ToggleRow label="Low Battery Prompt" checked={lowBattery} onChange={setLowBattery} />
-          <ToggleRow label="Voice Prompt" checked={voicePrompt} onChange={setVoicePrompt} />
+          <ToggleRow label="Side Tone" checked={sideTone} onChange={setSidetone} />
+          <ToggleRow label="Dolby Audio" checked={dolby} onChange={setDolby} />
+          <ToggleRow label="LDAC" checked={ldac} onChange={setLdac} />
         </ListCard>
       </div>
 
-      {/* Connections */}
+      {/* Status (read-only from device) */}
       <div className="mb-6">
-        <SectionLabel>Connections</SectionLabel>
+        <SectionLabel>Status</SectionLabel>
         <ListCard>
-          <ToggleRow label="Dual Connections" checked={dualConn} onChange={setDualConn} />
-          <LinkRow label="Sound Mode" subtitle="Preferred audio quality" />
+          <LinkRow label="Low Battery Prompt" value={lowBattery ? "On" : "Off"} />
+          <LinkRow label="Voice Prompt" value={voicePrompt ? "On" : "Off"} />
+          <LinkRow label="Dual Connections" value={state?.dualConnections.enabled ? "On" : "Off"} />
         </ListCard>
       </div>
 
@@ -38,7 +40,6 @@ export default function SettingsPage() {
         <SectionLabel>Power</SectionLabel>
         <ListCard>
           <LinkRow label="Auto Power Off" value={`${state?.autoPowerOff ?? 60} Min`} />
-          <ToggleRow label="Limit High Volume" checked={limitVol} onChange={setLimitVol} />
         </ListCard>
       </div>
 

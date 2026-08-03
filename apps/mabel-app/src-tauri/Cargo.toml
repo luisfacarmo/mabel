@@ -13,12 +13,16 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dirs = "6"
 mabel-transport = { path = "../../../crates/mabel-transport" }
+mabel-protocol = { path = "../../../crates/mabel-protocol" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

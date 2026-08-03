@@ -1,6 +1,6 @@
-import { Headphones } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ConnectionStatus } from "../../lib/types";
+import headsetImg from "../../assets/headset.png";
 
 interface Props {
   deviceName: string;
@@ -23,9 +23,13 @@ export default function DeviceHero({ deviceName, connectionStatus }: Props) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Headphone icon as placeholder for device image */}
-      <div className="w-24 h-24 rounded-full bg-surface flex items-center justify-center border border-border">
-        <Headphones size={48} className="text-accent" />
+      {/* Device image */}
+      <div className="w-32 h-32 rounded-full bg-surface flex items-center justify-center border border-border overflow-hidden p-3">
+        <img
+          src={headsetImg}
+          alt={deviceName}
+          className="w-full h-full object-contain drop-shadow-lg"
+        />
       </div>
 
       {/* Device name */}

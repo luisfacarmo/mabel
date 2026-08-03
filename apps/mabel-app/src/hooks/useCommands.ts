@@ -1,61 +1,79 @@
 import { useCallback } from "react";
 import type { AmbientSoundMode, NoiseCancelingMode } from "../lib/types";
+import * as tauri from "../lib/tauri";
 
-// Hook: command dispatch (setters that invoke backend).
-// Mock implementation — swap for Tauri invoke() in Phase E.
-// Each function logs the command for dev visibility.
-
+/**
+ * Hook: command dispatch (setters that invoke Tauri backend).
+ * In Tauri: calls real invoke() commands.
+ * In browser: logs to console (UI development).
+ */
 export function useCommands() {
-  const setSoundMode = useCallback((mode: AmbientSoundMode) => {
-    console.log("[mock] setSoundMode:", mode);
-  }, []);
-
-  const setNoiseCancelingMode = useCallback((mode: NoiseCancelingMode) => {
-    console.log("[mock] setNoiseCancelingMode:", mode);
-  }, []);
-
-  const setAdaptiveNcLevel = useCallback((level: number) => {
-    console.log("[mock] setAdaptiveNcLevel:", level);
-  }, []);
-
-  const setCustomNcLevel = useCallback((level: number) => {
-    console.log("[mock] setCustomNcLevel:", level);
-  }, []);
-
-  const setCustomTransparency = useCallback((level: number) => {
-    console.log("[mock] setCustomTransparency:", level);
-  }, []);
-
-  const setWindNoiseReduction = useCallback((enabled: boolean) => {
-    console.log("[mock] setWindNoiseReduction:", enabled);
-  }, []);
+  const setSoundMode = useCallback(
+    (mode: AmbientSoundMode, ncMode?: NoiseCancelingMode, level?: number, windNoise?: boolean) => {
+      if (tauri.isTauri) {
+        tauri.setSoundMode(mode, ncMode, level, windNoise).catch(console.error);
+      } else {
+        console.log("[mock] setSoundMode:", mode, ncMode, level, windNoise);
+      }
+    },
+    []
+  );
 
   const setEqualizer = useCallback((preset: string | null, bands: number[]) => {
-    console.log("[mock] setEqualizer:", { preset, bands });
+    if (tauri.isTauri) {
+      tauri.setEqualizer(preset, bands).catch(console.error);
+    } else {
+      console.log("[mock] setEqualizer:", { preset, bands });
+    }
   }, []);
 
-  const setToggle = useCallback((name: string, value: boolean) => {
-    console.log("[mock] setToggle:", name, value);
+  const setLdac = useCallback((enabled: boolean) => {
+    if (tauri.isTauri) {
+      tauri.setLdac(enabled).catch(console.error);
+    } else {
+      console.log("[mock] setLdac:", enabled);
+    }
+  }, []);
+
+  const setDolby = useCallback((enabled: boolean) => {
+    if (tauri.isTauri) {
+      tauri.setDolby(enabled).catch(console.error);
+    } else {
+      console.log("[mock] setDolby:", enabled);
+    }
+  }, []);
+
+  const setSidetone = useCallback((enabled: boolean) => {
+    if (tauri.isTauri) {
+      tauri.setSidetone(enabled).catch(console.error);
+    } else {
+      console.log("[mock] setSidetone:", enabled);
+    }
   }, []);
 
   const setAutoPowerOff = useCallback((minutes: number) => {
-    console.log("[mock] setAutoPowerOff:", minutes);
+    if (tauri.isTauri) {
+      tauri.setAutoPowerOff(minutes).catch(console.error);
+    } else {
+      console.log("[mock] setAutoPowerOff:", minutes);
+    }
   }, []);
 
-  const setButtonConfig = useCallback((action: string | null) => {
-    console.log("[mock] setButtonConfig:", action);
+  const setModeCycle = useCallback((nc: boolean, transparency: boolean, normal: boolean) => {
+    if (tauri.isTauri) {
+      tauri.setModeCycle(nc, transparency, normal).catch(console.error);
+    } else {
+      console.log("[mock] setModeCycle:", { nc, transparency, normal });
+    }
   }, []);
 
   return {
     setSoundMode,
-    setNoiseCancelingMode,
-    setAdaptiveNcLevel,
-    setCustomNcLevel,
-    setCustomTransparency,
-    setWindNoiseReduction,
     setEqualizer,
-    setToggle,
+    setLdac,
+    setDolby,
+    setSidetone,
     setAutoPowerOff,
-    setButtonConfig,
+    setModeCycle,
   };
 }

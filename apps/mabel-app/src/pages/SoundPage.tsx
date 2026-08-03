@@ -1,14 +1,22 @@
-import { useState } from "react";
-import { useDeviceData } from "../providers/DeviceProvider";
+import { useDeviceData, useDeviceCommands } from "../providers/DeviceProvider";
 import { SectionLabel, ListCard } from "../components/ui";
 import { EQ_PRESETS } from "../lib/mock-data";
 
 export default function SoundPage() {
   const state = useDeviceData();
-  const [activePreset, setActivePreset] = useState(state?.equalizer.preset ?? "Podcast");
-  const bands = activePreset ? (EQ_PRESETS[activePreset] ?? state?.equalizer.bands) : state?.equalizer.bands;
+  const { setEqualizer } = useDeviceCommands();
+
+  const activePreset = state?.equalizer.preset ?? "Podcast";
+  const bands = state?.equalizer.bands ?? EQ_PRESETS["Podcast"];
 
   const freqs = ["100", "200", "400", "800", "1.6k", "3.2k", "6.4k", "12.8k", "16k", "20k"];
+
+  const handlePresetChange = (name: string) => {
+    const presetBands = EQ_PRESETS[name];
+    if (presetBands) {
+      setEqualizer(name, presetBands);
+    }
+  };
 
   return (
     <div>
@@ -25,12 +33,12 @@ export default function SoundPage() {
               <div className="absolute top-1/2 left-0 right-0 h-px bg-divider" />
               {/* Dots */}
               {(bands ?? []).map((val, i) => {
-                const offset = ((val - 90) / 90) * -60; // map 0-180 to visual offset
+                const offset = ((val - 90) / 90) * -60;
                 return (
                   <div
                     key={i}
                     className={`w-[14px] h-[14px] rounded-full border-[2.5px] border-accent z-10 transition-all ${
-                      val !== 90 ? "bg-accent" : "bg-white"
+                      val !== 90 ? "bg-accent" : "bg-surface"
                     }`}
                     style={{ marginTop: `${offset}px` }}
                   />
@@ -49,7 +57,7 @@ export default function SoundPage() {
           {Object.keys(EQ_PRESETS).map((name) => (
             <button
               key={name}
-              onClick={() => setActivePreset(name)}
+              onClick={() => handlePresetChange(name)}
               className={`px-3 py-1.5 rounded-full text-[12px] font-medium cursor-pointer transition-all ${
                 activePreset === name
                   ? "bg-accent text-white"

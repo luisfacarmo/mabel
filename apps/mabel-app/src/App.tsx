@@ -4,6 +4,7 @@ import AppLayout from "./components/layout/AppLayout";
 import HomePage from "./pages/HomePage";
 import AncPage from "./pages/AncPage";
 import SoundPage from "./pages/SoundPage";
+import ControlsPage from "./pages/ControlsPage";
 import SettingsPage from "./pages/SettingsPage";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/anc" element={<AncPage />} />
             <Route path="/sound" element={<SoundPage />} />
+            <Route path="/controls" element={<ControlsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>

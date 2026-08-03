@@ -1,60 +1,39 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { ConnectionStatus } from "../lib/types";
+import { isTauri, onConnectionState, type ConnectionState } from "../lib/tauri";
 
-// Check if running inside Tauri (vs browser for dev)
-const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
-
+/**
+ * Hook: connection status from the device loop.
+ * In Tauri: listens to "connection-state" events from the Rust backend.
+ * In browser: defaults to "connected" (mock mode).
+ */
 export function useConnection() {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
-  // Poll for device presence every 3 seconds
   useEffect(() => {
     if (!isTauri) {
-      // In browser dev mode, default to connected (mock)
       setStatus("connected");
       return;
     }
 
-    let active = true;
+    let unlisten: (() => void) | undefined;
 
-    const poll = async () => {
-      try {
-        const { invoke } = await import("@tauri-apps/api/core");
-        const online = await invoke<boolean>("check_device_online");
-        if (active) setStatus(online ? "connected" : "disconnected");
-      } catch {
-        if (active) setStatus("disconnected");
-      }
-    };
-
-    poll(); // Initial check
-    const interval = setInterval(poll, 3000);
+    onConnectionState((state: ConnectionState) => {
+      const mapped: ConnectionStatus =
+        state === "connected"
+          ? "connected"
+          : state === "connecting"
+            ? "reconnecting"
+            : "disconnected";
+      setStatus(mapped);
+    }).then((fn) => {
+      unlisten = fn;
+    });
 
     return () => {
-      active = false;
-      clearInterval(interval);
+      unlisten?.();
     };
   }, []);
 
-  const connect = useCallback(async () => {
-    setStatus("reconnecting");
-    if (isTauri) {
-      try {
-        const { invoke } = await import("@tauri-apps/api/core");
-        const online = await invoke<boolean>("check_device_online");
-        setStatus(online ? "connected" : "disconnected");
-      } catch {
-        setStatus("disconnected");
-      }
-    } else {
-      await new Promise((r) => setTimeout(r, 800));
-      setStatus("connected");
-    }
-  }, []);
-
-  const disconnect = useCallback(async () => {
-    setStatus("disconnected");
-  }, []);
-
-  return { status, connect, disconnect };
+  return { status };
 }

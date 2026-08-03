@@ -23,6 +23,10 @@ impl RfcommTransport for MockTransport {
     async fn discover(&self) -> Result<Vec<ConnectionDescriptor>> {
         Ok(self.devices.clone())
     }
+
+    async fn connect(&self, _mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
+        Ok(Box::new(MockConnection::new()))
+    }
 }
 
 /// Mock connection for testing send/receive without hardware.

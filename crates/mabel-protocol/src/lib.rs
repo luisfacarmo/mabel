@@ -3,17 +3,11 @@
 //! Handles packet framing, checksums, and per-model state parsers.
 //! Currently targets the Soundcore Space One Pro (A3062).
 
+pub mod error;
 pub mod framing;
 pub mod models;
+pub mod stream;
 
-pub mod framing {
-    //! Packet framing: header, command bytes, body, checksum.
-}
-
-pub mod models {
-    //! Per-device model implementations.
-
-    pub mod a3062 {
-        //! Soundcore Space One Pro (A3062) protocol.
-    }
-}
+pub use error::ProtocolError;
+pub use framing::{Direction, Packet};
+pub use stream::PacketStream;

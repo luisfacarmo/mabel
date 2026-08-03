@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useDeviceData } from "../providers/DeviceProvider";
-import { SectionLabel, ListCard, ToggleRow, LinkRow, ModeCard } from "../components/ui";
+import { useDeviceData, useDeviceCommands } from "../providers/DeviceProvider";
+import { SectionLabel, ListCard, ToggleRow, ModeCard } from "../components/ui";
 import type { AmbientSoundMode } from "../lib/types";
 
 const MODES: Array<{ key: AmbientSoundMode; icon: string; label: string }> = [
@@ -11,11 +10,23 @@ const MODES: Array<{ key: AmbientSoundMode; icon: string; label: string }> = [
 
 export default function AncPage() {
   const state = useDeviceData();
-  const [activeMode, setActiveMode] = useState<AmbientSoundMode>(
-    state?.soundModes.ambientSoundMode ?? "noiseCanceling"
-  );
-  const [ncLevel, setNcLevel] = useState(state?.soundModes.customNcLevel ?? 3);
-  const [windNoise, setWindNoise] = useState(state?.soundModes.windNoiseReduction ?? false);
+  const { setSoundMode } = useDeviceCommands();
+
+  const activeMode = state?.soundModes.ambientSoundMode ?? "noiseCanceling";
+  const ncLevel = state?.soundModes.customNcLevel ?? 3;
+  const windNoise = state?.soundModes.windNoiseReduction ?? false;
+
+  const handleModeChange = (mode: AmbientSoundMode) => {
+    setSoundMode(mode, undefined, undefined, windNoise);
+  };
+
+  const handleLevelChange = (level: number) => {
+    setSoundMode(activeMode, "custom", level, windNoise);
+  };
+
+  const handleWindNoise = (enabled: boolean) => {
+    setSoundMode(activeMode, undefined, undefined, enabled);
+  };
 
   return (
     <div>
@@ -31,17 +42,14 @@ export default function AncPage() {
               icon={icon}
               label={label}
               active={activeMode === key}
-              onClick={() => setActiveMode(key)}
+              onClick={() => handleModeChange(key)}
             />
           ))}
         </div>
       </div>
 
-      {/* Mode + Level */}
+      {/* Level selector */}
       <div className="mb-6">
-        <ListCard>
-          <LinkRow label="Mode" value="Custom Noise Cancelling" />
-        </ListCard>
         <ListCard>
           <div className="px-[18px] py-[14px]">
             <div className="text-[13px] text-text-secondary mb-3">Level</div>
@@ -50,7 +58,7 @@ export default function AncPage() {
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
-                  onClick={() => setNcLevel(n)}
+                  onClick={() => handleLevelChange(n)}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all ${
                     ncLevel === n
                       ? "bg-accent text-white shadow-[0_2px_8px_rgba(77,208,225,0.3)]"
@@ -69,7 +77,7 @@ export default function AncPage() {
       {/* Wind noise */}
       <div className="mb-6">
         <ListCard>
-          <ToggleRow label="Wind Noise Reduction" checked={windNoise} onChange={setWindNoise} />
+          <ToggleRow label="Wind Noise Reduction" checked={windNoise} onChange={handleWindNoise} />
         </ListCard>
       </div>
     </div>

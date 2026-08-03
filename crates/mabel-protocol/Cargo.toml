@@ -8,4 +8,6 @@ description = "Soundcore device protocol: packet framing, parsing, and per-model
 
 [dependencies]
 serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
+nom = "8"

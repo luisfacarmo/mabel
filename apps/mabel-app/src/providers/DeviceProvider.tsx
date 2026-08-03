@@ -2,7 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { useConnection } from "../hooks/useConnection";
 import { useDeviceState } from "../hooks/useDeviceState";
 import { useCommands } from "../hooks/useCommands";
-import type { ConnectionStatus, DeviceState } from "../lib/types";
+import type { DeviceState } from "../lib/types";
 
 interface DeviceContextValue {
   connection: ReturnType<typeof useConnection>;
