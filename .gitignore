@@ -6,6 +6,9 @@
 node_modules/
 dist/
 
+# Tauri auto-generated
+apps/mabel-app/src-tauri/gen/
+
 # Environment
 .env
 .env.*
