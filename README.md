@@ -25,8 +25,8 @@ Named after Mabel Mora from *Only Murders in the Building* — always wearing he
 | Protocol parser | ✅ Working | 37 tests passing, A3062 state decode |
 | Command builders | ✅ Working | 9 outbound commands |
 | RFCOMM discovery | ✅ Working | Finds paired Soundcore devices |
-| RFCOMM data channel | 🔧 In progress | Connects but wrong service UUID — investigating |
-| Real-time control | ⏳ Blocked | Waiting on correct RFCOMM channel |
+| RFCOMM data channel | ✅ Working | Vendor UUID `0CF12D31-...-3062` identified and connected |
+| Real-time control | 🔧 In progress | Commands sent, validating toggle state accuracy |
 | System tray | ✅ Working | Minimize to tray, show/hide |
 | Settings persistence | ✅ Working | JSON config file |
 
