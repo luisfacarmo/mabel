@@ -128,7 +128,7 @@ fn connect_blocking(mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
         .map_err(|e| TransportError::Platform(format!("Services: {e}")))?;
 
     let count = services.Size().unwrap_or(0);
-    debug!("found {} RFCOMM services, trying each...", count);
+    debug!("found {} RFCOMM services", count);
 
     if count == 0 {
         return Err(TransportError::ConnectionFailed(
@@ -136,22 +136,40 @@ fn connect_blocking(mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
         ));
     }
 
-    // Try each service until one connects successfully
+    // Collect all service UUIDs for smart selection
+    let mut service_entries: Vec<(u32, String)> = Vec::new();
+    for i in 0..count {
+        if let Ok(service) = services.GetAt(i) {
+            let uuid_str = service
+                .ServiceId()
+                .and_then(|id| id.Uuid())
+                .map(|u| format!("{:08X}-{:04X}-{:04X}-{:02X}{:02X}-{:02X}{:02X}{:02X}{:02X}{:02X}{:02X}",
+                    u.data1, u.data2, u.data3, u.data4[0], u.data4[1],
+                    u.data4[2], u.data4[3], u.data4[4], u.data4[5], u.data4[6], u.data4[7]))
+                .unwrap_or_else(|_| "unknown".into());
+            debug!("  service [{}]: {}", i, uuid_str);
+            service_entries.push((i, uuid_str));
+        }
+    }
+
+    // Priority order (from OpenSCQ30):
+    // 1. Soundcore vendor UUID: 0CF12D31-FAC3-4553-BD80-D6832E7XXXXX
+    // 2. SPP standard: 00001101-0000-1000-8000-00805F9B34FB
+    // 3. Any other that connects
+
+    let priority_order = select_service_priority(&service_entries);
+    debug!("connection priority order: {:?}", priority_order);
+
     let mut last_error = String::new();
 
-    for i in 0..count {
-        let service = match services.GetAt(i) {
+    for &idx in &priority_order {
+        let service = match services.GetAt(idx) {
             Ok(s) => s,
             Err(_) => continue,
         };
 
-        let uuid_str = service
-            .ServiceId()
-            .and_then(|id| id.Uuid())
-            .map(|u| format!("{:?}", u))
-            .unwrap_or_else(|_| "unknown".into());
-
-        debug!("  trying service [{}]: {}", i, uuid_str);
+        let uuid_label = service_entries.iter().find(|(i, _)| *i == idx).map(|(_, u)| u.as_str()).unwrap_or("?");
+        debug!("  attempting connection to service [{}]: {}", idx, uuid_label);
 
         let socket = match StreamSocket::new() {
             Ok(s) => s,
@@ -186,7 +204,7 @@ fn connect_blocking(mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
             .and_then(|op| op.get())
         {
             Ok(()) => {
-                info!("  -> connected via service [{}]: {}", i, uuid_str);
+                info!("  -> connected via service [{}]: {}", idx, uuid_label);
 
                 let socket_ref = AgileReference::new(&socket)
                     .map_err(|e| TransportError::Platform(format!("AgileRef socket: {e}")))?;
@@ -234,6 +252,42 @@ fn connect_blocking(mac_address: &str) -> Result<Box<dyn RfcommConnection>> {
         "all {} services failed, last error: {}",
         count, last_error
     )))
+}
+
+/// Determine connection priority based on OpenSCQ30 strategy:
+/// 1. Soundcore vendor UUID (0CF12D31-FAC3-4553-BD80-D6832E7xxxxx)
+/// 2. SPP standard (00001101-...)
+/// 3. Everything else (skip known audio profiles 0000111E, 00001108, 0000110B, etc.)
+fn select_service_priority(services: &[(u32, String)]) -> Vec<u32> {
+    let mut vendor: Vec<u32> = Vec::new();
+    let mut spp: Vec<u32> = Vec::new();
+    let mut other: Vec<u32> = Vec::new();
+
+    // Known audio/control profiles that are NOT the data channel
+    let skip_prefixes = ["0000111E", "00001108", "0000110B", "0000110E", "0000111F"];
+
+    for (idx, uuid) in services {
+        let upper = uuid.to_uppercase();
+        if upper.starts_with("0CF12D31") {
+            // Soundcore vendor UUID
+            vendor.push(*idx);
+        } else if upper.starts_with("00001101") {
+            // SPP standard
+            spp.push(*idx);
+        } else if skip_prefixes.iter().any(|p| upper.starts_with(p)) {
+            // Known audio profile — try last
+            other.push(*idx);
+        } else {
+            // Unknown custom UUID — might be vendor-specific, try before audio profiles
+            spp.push(*idx);
+        }
+    }
+
+    let mut result = Vec::new();
+    result.extend(vendor);
+    result.extend(spp);
+    result.extend(other);
+    result
 }
 
 fn find_device_by_mac(mac_address: &str) -> Result<BluetoothDevice> {
