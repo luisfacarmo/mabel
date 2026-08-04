@@ -50,12 +50,12 @@ pub struct DeviceStateEvent {
     pub toggles: TogglesEvent,
     pub auto_power_off: u16,
     pub limit_high_volume: LimitHighVolumeEvent,
-    pub dual_connections: bool,
+    pub dual_connections: DualConnectionsEvent,
 }
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BatteryEvent { pub level: u8, pub max_level: u8 }
+pub struct BatteryEvent { pub level: u8, pub max_level: u8, pub is_charging: bool }
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -94,6 +94,20 @@ pub struct TogglesEvent {
 #[serde(rename_all = "camelCase")]
 pub struct LimitHighVolumeEvent { pub enabled: bool, pub db_limit: u8 }
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DualConnectionsEvent {
+    pub enabled: bool,
+    pub devices: Vec<DualConnectionDeviceEvent>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DualConnectionDeviceEvent {
+    pub name: String,
+    pub connected: bool,
+}
+
 /// Main device loop. Runs forever, retrying on disconnect.
 pub async fn run_loop(app: AppHandle, mut cmd_rx: CommandReceiver) {
     let transport = WindowsRfcommTransport::default();
@@ -113,6 +127,7 @@ pub async fn run_loop(app: AppHandle, mut cmd_rx: CommandReceiver) {
                 }
 
                 let mut stream = PacketStream::new();
+                let mut state_poll = tokio::time::interval(Duration::from_secs(10));
 
                 loop {
                     tokio::select! {
@@ -142,6 +157,13 @@ pub async fn run_loop(app: AppHandle, mut cmd_rx: CommandReceiver) {
                             let packet_bytes = build_command_packet(&cmd);
                             if let Err(e) = connection.write(&packet_bytes).await {
                                 warn!("failed to send command: {e}");
+                                break;
+                            }
+                        }
+                        _ = state_poll.tick() => {
+                            let state_req = a3062::request_state().to_bytes();
+                            if let Err(e) = connection.write(&state_req).await {
+                                warn!("failed to poll state: {e}");
                                 break;
                             }
                         }
@@ -183,8 +205,18 @@ async fn find_and_connect(
 
 fn handle_inbound_packet(app: &AppHandle, packet: &Packet) {
     if packet.command == [0x01, 0x01] {
+        // Log raw bytes for debugging
+        debug!("state update raw body ({} bytes): {:?}", packet.body.len(), &packet.body[..packet.body.len().min(30)]);
+        if packet.body.len() > 30 {
+            debug!("  ... bytes [30..]: {:?}", &packet.body[30..]);
+        }
+
         match a3062::parse_state_update(&packet.body) {
             Ok(state) => {
+                debug!("  parsed: battery={}/{}, fw={}, anc={:?}, dolby={}, ldac={}",
+                    state.battery.level, state.battery.max_level,
+                    state.firmware, state.sound_modes.ambient_sound_mode,
+                    state.toggles.dolby_audio, state.toggles.ldac);
                 let event = state_to_event(&state);
 
                 // Battery alert check
@@ -208,7 +240,7 @@ fn handle_inbound_packet(app: &AppHandle, packet: &Packet) {
 
 fn state_to_event(state: &A3062State) -> DeviceStateEvent {
     DeviceStateEvent {
-        battery: BatteryEvent { level: state.battery.level, max_level: state.battery.max_level },
+        battery: BatteryEvent { level: state.battery.level, max_level: state.battery.max_level, is_charging: state.battery.is_charging },
         firmware: state.firmware.clone(),
         serial_number: state.serial_number.clone(),
         sound_modes: SoundModesEvent {
@@ -259,7 +291,10 @@ fn state_to_event(state: &A3062State) -> DeviceStateEvent {
             enabled: state.limit_high_volume.enabled,
             db_limit: state.limit_high_volume.db_limit,
         },
-        dual_connections: state.dual_connections,
+        dual_connections: DualConnectionsEvent {
+            enabled: state.dual_connections,
+            devices: vec![],
+        },
     }
 }
 

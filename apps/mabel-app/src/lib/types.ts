@@ -7,8 +7,9 @@ export type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
 
 export interface DeviceState {
   battery: {
-    level: number; // 0-10
+    level: number; // 1-10
     maxLevel: number; // always 10 for A3062
+    isCharging: boolean;
   };
   firmware: string;
   serialNumber: string;

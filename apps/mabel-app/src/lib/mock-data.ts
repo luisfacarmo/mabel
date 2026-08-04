@@ -6,6 +6,7 @@ export const MOCK_DEVICE_STATE: DeviceState = {
   battery: {
     level: 5,
     maxLevel: 10,
+    isCharging: false,
   },
   firmware: "03.37",
   serialNumber: "3062DB212C13E97C",

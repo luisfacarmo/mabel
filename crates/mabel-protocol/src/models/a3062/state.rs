@@ -21,10 +21,12 @@ pub struct A3062State {
 /// Battery level (0-10 scale, maxLevel always 10 for A3062).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Battery {
-    /// Current level (0-10).
+    /// Current level (1-10, with +1 offset applied from raw wire value).
     pub level: u8,
     /// Maximum level (always 10 for A3062).
     pub max_level: u8,
+    /// Whether the device is currently charging.
+    pub is_charging: bool,
 }
 
 /// Active sound/ANC modes.
@@ -128,7 +130,7 @@ mod tests {
     #[test]
     fn test_state_serializes_to_json() {
         let state = A3062State {
-            battery: Battery { level: 7, max_level: 10 },
+            battery: Battery { level: 7, max_level: 10, is_charging: false },
             firmware: "03.37".into(),
             serial_number: "3062DB212C13E97C".into(),
             sound_modes: SoundModes {

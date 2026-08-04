@@ -31,10 +31,10 @@ pub fn parse_state_update(body: &[u8]) -> Result<A3062State> {
 
     let mut pos = 0;
 
-    // --- SingleBattery (2 bytes) ---
-    let battery_level = body[pos];
+    // --- SingleBattery (2 bytes): level (raw, +1 offset) + is_charging ---
+    let battery_level_raw = body[pos];
     pos += 1;
-    let _battery_charging = body[pos];
+    let battery_charging = body[pos]; // 0=No, 1=Yes
     pos += 1;
 
     // --- FirmwareVersion (5 bytes ASCII) ---
@@ -159,8 +159,9 @@ pub fn parse_state_update(body: &[u8]) -> Result<A3062State> {
 
     Ok(A3062State {
         battery: Battery {
-            level: battery_level.min(10),
+            level: (battery_level_raw + 1).min(10),
             max_level: 10,
+            is_charging: battery_charging != 0,
         },
         firmware,
         serial_number,
@@ -247,8 +248,11 @@ mod tests {
     #[test]
     fn test_parse_battery() {
         let state = parse_state_update(TEST_VECTOR).unwrap();
-        assert_eq!(state.battery.level, 4);
+        // Test vector byte[0]=4, with +1 offset → level=5
+        assert_eq!(state.battery.level, 5);
         assert_eq!(state.battery.max_level, 10);
+        // byte[1]=255 → is_charging=true (non-zero)
+        assert!(state.battery.is_charging);
     }
 
     #[test]
