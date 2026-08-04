@@ -30,6 +30,8 @@ pub fn run() {
             commands::set_mode_cycle,
             commands::get_settings,
             commands::save_settings,
+            commands::disconnect_device,
+            commands::connect_device,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

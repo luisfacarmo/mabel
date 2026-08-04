@@ -110,3 +110,14 @@ pub fn get_settings() -> crate::settings::Settings {
 pub fn save_settings(settings: crate::settings::Settings) -> Result<(), String> {
     crate::settings::save(&settings)
 }
+
+
+#[tauri::command]
+pub fn disconnect_device(cmd_tx: State<CommandSender>) -> Result<(), String> {
+    cmd_tx.send(DeviceCommand::Disconnect).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn connect_device(cmd_tx: State<CommandSender>) -> Result<(), String> {
+    cmd_tx.send(DeviceCommand::Connect).map_err(|e| e.to_string())
+}

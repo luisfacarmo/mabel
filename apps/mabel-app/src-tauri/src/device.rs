@@ -28,6 +28,8 @@ pub enum DeviceCommand {
     SetLdac(bool),
     SetDolby(bool),
     SetSidetone(bool),
+    Disconnect,
+    Connect,
 }
 
 pub type CommandSender = mpsc::UnboundedSender<DeviceCommand>;
@@ -153,11 +155,22 @@ pub async fn run_loop(app: AppHandle, mut cmd_rx: CommandReceiver) {
                             }
                         }
                         Some(cmd) = cmd_rx.recv() => {
-                            debug!("executing command: {cmd:?}");
-                            let packet_bytes = build_command_packet(&cmd);
-                            if let Err(e) = connection.write(&packet_bytes).await {
-                                warn!("failed to send command: {e}");
-                                break;
+                            match cmd {
+                                DeviceCommand::Disconnect => {
+                                    info!("disconnect requested by user");
+                                    break;
+                                }
+                                DeviceCommand::Connect => {
+                                    // Already connected, ignore
+                                }
+                                _ => {
+                                    debug!("executing command: {cmd:?}");
+                                    let packet_bytes = build_command_packet(&cmd);
+                                    if let Err(e) = connection.write(&packet_bytes).await {
+                                        warn!("failed to send command: {e}");
+                                        break;
+                                    }
+                                }
                             }
                         }
                         _ = state_poll.tick() => {
@@ -308,5 +321,6 @@ fn build_command_packet(cmd: &DeviceCommand) -> Vec<u8> {
         DeviceCommand::SetLdac(enabled) => a3062::set_ldac(*enabled).to_bytes(),
         DeviceCommand::SetDolby(enabled) => a3062::set_dolby(*enabled).to_bytes(),
         DeviceCommand::SetSidetone(enabled) => a3062::set_sidetone(*enabled).to_bytes(),
+        DeviceCommand::Disconnect | DeviceCommand::Connect => vec![], // handled in select! loop
     }
 }

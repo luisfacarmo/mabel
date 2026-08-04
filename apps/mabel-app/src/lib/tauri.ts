@@ -73,3 +73,12 @@ export function setModeCycle(
 ): Promise<void> {
   return invoke("set_mode_cycle", { nc, transparency, normal });
 }
+
+
+export function disconnectDevice(): Promise<void> {
+  return invoke("disconnect_device");
+}
+
+export function connectDevice(): Promise<void> {
+  return invoke("connect_device");
+}
