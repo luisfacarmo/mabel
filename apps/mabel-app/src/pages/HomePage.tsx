@@ -1,12 +1,13 @@
 import { useDeviceData, useDeviceCommands } from "../providers/DeviceProvider";
 import { SectionLabel, ListCard, ToggleRow, LinkRow, ModeCard } from "../components/ui";
+import { ShieldOff, Headphones, Ear } from "lucide-react";
 import type { AmbientSoundMode } from "../lib/types";
 import headsetImg from "../assets/headset.png";
 
-const MODES: Array<{ key: AmbientSoundMode; icon: string; label: string }> = [
-  { key: "noiseCanceling", icon: "🔇", label: "Noise<br>Cancellation" },
-  { key: "normal", icon: "🙉", label: "Normal" },
-  { key: "transparency", icon: "🌬️", label: "Transparency<br>Mode" },
+const MODES: Array<{ key: AmbientSoundMode; icon: React.ReactNode; label: string }> = [
+  { key: "noiseCanceling", icon: <ShieldOff size={22} />, label: "Noise<br>Cancellation" },
+  { key: "normal", icon: <Headphones size={22} />, label: "Normal" },
+  { key: "transparency", icon: <Ear size={22} />, label: "Transparency<br>Mode" },
 ];
 
 export default function HomePage() {
@@ -66,7 +67,7 @@ export default function HomePage() {
       {/* Sound Effect */}
       <div className="mb-6">
         <ListCard>
-          <LinkRow icon="🎵" label="Sound Effect" subtitle={state.equalizer.preset ?? "Custom"} />
+          <LinkRow label="Sound Effect" subtitle={state.equalizer.preset ?? "Custom"} />
         </ListCard>
       </div>
 

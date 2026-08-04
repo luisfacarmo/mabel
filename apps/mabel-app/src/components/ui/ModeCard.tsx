@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 interface Props {
-  icon: string;
+  icon: ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;
@@ -26,8 +27,8 @@ export default function ModeCard({ icon, label, active, onClick }: Props) {
     >
       <div
         className={`
-          w-[44px] h-[44px] rounded-full flex items-center justify-center text-[20px] transition-colors
-          ${active ? "bg-accent text-white" : "bg-surface-hover"}
+          w-[44px] h-[44px] rounded-full flex items-center justify-center transition-colors
+          ${active ? "bg-accent text-white" : "bg-surface-hover text-text-secondary"}
         `}
       >
         {icon}

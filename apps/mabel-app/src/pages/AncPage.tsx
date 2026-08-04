@@ -1,11 +1,12 @@
 import { useDeviceData, useDeviceCommands } from "../providers/DeviceProvider";
 import { SectionLabel, ListCard, ToggleRow, ModeCard } from "../components/ui";
+import { ShieldOff, Headphones, Ear } from "lucide-react";
 import type { AmbientSoundMode } from "../lib/types";
 
-const MODES: Array<{ key: AmbientSoundMode; icon: string; label: string }> = [
-  { key: "noiseCanceling", icon: "🔇", label: "Noise<br>Cancellation" },
-  { key: "normal", icon: "🙉", label: "Normal" },
-  { key: "transparency", icon: "🌬️", label: "Transparency<br>Mode" },
+const MODES: Array<{ key: AmbientSoundMode; icon: React.ReactNode; label: string }> = [
+  { key: "noiseCanceling", icon: <ShieldOff size={22} />, label: "Noise<br>Cancellation" },
+  { key: "normal", icon: <Headphones size={22} />, label: "Normal" },
+  { key: "transparency", icon: <Ear size={22} />, label: "Transparency<br>Mode" },
 ];
 
 export default function AncPage() {
